@@ -1,10 +1,15 @@
 package com.davidawehr.androwobble;
 
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+
 
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -16,23 +21,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Example of a call to a native method
-        TextView tv = (TextView) findViewById(R.id.sample_text);
-        tv.setText(stringFromJNI());
-
-        NativeCalls.initSensors();
+        //NativeCalls.initSensors();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        NativeCalls.registerSensors();
+        //NativeCalls.registerSensors();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        NativeCalls.unregisterSensors();
+        //NativeCalls.unregisterSensors();
+    }
+
+    public void onStartBalanceBtn(View view) {
+        Intent serviceIntent = new Intent(this, BalanceService.class);
+        startService(serviceIntent);
     }
 
     /**
