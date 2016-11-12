@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -17,12 +18,33 @@ public class BalanceService extends Service {
     private static final String EXTRA_ACTION = "com.davidawehr.androwobble.what";
     private static final String EXTRA_ACTION_STOP = "stop";
 
-    private static boolean running = false;
+    private static boolean balancing = false;
+    private final IBinder mBinder = new BalanceBinder();
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // TODO: Stop balancing if balancing
+        if (balancing) {
+            Log.v("", "stopping balancing");
+        }
+    }
+
+    private void beginBalancing() {
+        Log.v("", "starting balancing");
+    }
+
+    public class BalanceBinder extends Binder {
+        BalanceService getService() {
+            // Return local instance of service so its methods can be called
+            return BalanceService.this;
+        }
+    }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mBinder;
     }
 
     @Override
@@ -32,14 +54,13 @@ public class BalanceService extends Service {
                 String what = intent.getStringExtra(EXTRA_ACTION);
                 switch (what) {
                     case EXTRA_ACTION_STOP:
-                        running = false;
-                        stopSelf();
+                        stopBalancing();
                         return START_NOT_STICKY;
                 }
             }
         }
 
-        if (!running) {
+        if (!balancing) {
             // Create intent to stop service
             Intent stopBalanceIntent = new Intent(this, this.getClass());
             stopBalanceIntent.putExtra(EXTRA_ACTION, EXTRA_ACTION_STOP);
@@ -62,9 +83,21 @@ public class BalanceService extends Service {
 
             // Start service as foreground
             startForeground(BAL_SERVICE_NOTIF_ID, notification);
-            running = true;
+            balancing = true;
          }
 
         return START_STICKY;
+    }
+
+    // Whether the service is balancing or not
+    public boolean getBalancing() {
+        return balancing;
+    }
+
+    public void stopBalancing() {
+        balancing = false;
+        // Removes the notification
+        stopForeground(true);
+        stopSelf();
     }
 }

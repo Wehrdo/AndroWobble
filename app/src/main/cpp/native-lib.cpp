@@ -3,7 +3,6 @@
 #include <jni.h>
 #include <string>
 #include <android/sensor.h>
-#include <android/looper.h>
 #include <android/log.h>
 #include <assert.h>
 #include <cmath>
@@ -130,7 +129,6 @@ Java_com_davidawehr_androwobble_NativeCalls_registerSensors(JNIEnv *env, jclass 
     registerSensors();
 }
 
-
 JNIEXPORT void JNICALL
 Java_com_davidawehr_androwobble_NativeCalls_unregisterSensors(JNIEnv *env, jclass type) {
     unregisterSensors();
@@ -139,15 +137,6 @@ Java_com_davidawehr_androwobble_NativeCalls_unregisterSensors(JNIEnv *env, jclas
 JNIEXPORT void JNICALL
 Java_com_davidawehr_androwobble_NativeCalls_initSensors(JNIEnv *env, jclass type) {
     initSensors();
-}
-
-
-jstring
-Java_com_davidawehr_androwobble_MainActivity_stringFromJNI(
-        JNIEnv *env,
-        jobject /* this */) {
-    std::string hello = "Hello from C++";
-    return env->NewStringUTF(hello.c_str());
 }
 
 }

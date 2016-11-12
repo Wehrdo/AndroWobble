@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AndroWobble</string>
+    <string name="start_bal_service">Start Balancing</string>
+    <string name="stop_bal_service">Stop Balancing</string>
 </resources>
