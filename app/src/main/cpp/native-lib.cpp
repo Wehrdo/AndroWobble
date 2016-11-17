@@ -47,7 +47,6 @@ static double accelToAngle(float x, float y, float z) {
  */
 static int sensorCallback(int fd, int events, void* data) {
     ASensorEvent event;
-    bool updated = false;
     // Loop over all updates in event queue
     while (ASensorEventQueue_getEvents(sensorEventQueue, &event, 1)) {
         switch (event.type) {
@@ -77,14 +76,13 @@ static int sensorCallback(int fd, int events, void* data) {
                           (1 - CF_RATIO) * accel_angle;
             gyroFresh = false;
             accelFresh = false;
-            updated = true;
             c++;
         }
     }
 
-//    if (c % 4 == 0) {
+    if (c % 10 == 0) {
         LOGV("smoothed: %.5f, gyro: %.5f, accel: %.5f", deviceAngle, gyro_d_angle, accel_angle);
-//    }
+    }
 
 
     // return 1 to continue receiving callbacks, 0 cancels callback

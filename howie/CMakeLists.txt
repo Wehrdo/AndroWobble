@@ -37,10 +37,12 @@ find_library( # Sets the name of the path variable.
 find_library(OpenSLES-lib,
              OpenSLES)
 
+#include_directories(${ANDROID_NDK}/platforms/${ANDROID_PLATFORM}/${ANDROID_ABI}/usr/include/SLES)
+
 target_link_libraries( # Specifies the target library.
                        howie
 
                        # Links the target library to the log library
                        # included in the NDK.
-                       ${log-lib}
-                       ${OpenSLES-lib})
+                       ${OpenSLES-lib}
+                       ${log-lib})

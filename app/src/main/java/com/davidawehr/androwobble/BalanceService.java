@@ -13,6 +13,8 @@ import android.util.Log;
  * Created by dawehr on 11/9/2016.
  */
 
+//import com.example.android.howie.HowieEngine;
+
 public class BalanceService extends Service {
     private static final int BAL_SERVICE_NOTIF_ID = 12345;
     private static final String EXTRA_ACTION = "com.davidawehr.androwobble.what";
@@ -20,6 +22,15 @@ public class BalanceService extends Service {
 
     private static boolean balancing = false;
     private final IBinder mBinder = new BalanceBinder();
+    static {
+        System.loadLibrary("native-lib");
+    }
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        NativeCalls.initSensors();
+        //HowieEngine.init(this);
+    }
 
     @Override
     public void onDestroy() {
@@ -28,10 +39,6 @@ public class BalanceService extends Service {
         if (balancing) {
             Log.v("", "stopping balancing");
         }
-    }
-
-    private void beginBalancing() {
-        Log.v("", "starting balancing");
     }
 
     public class BalanceBinder extends Binder {
@@ -83,6 +90,9 @@ public class BalanceService extends Service {
 
             // Start service as foreground
             startForeground(BAL_SERVICE_NOTIF_ID, notification);
+
+            beginBalancing();
+
             balancing = true;
          }
 
@@ -94,10 +104,16 @@ public class BalanceService extends Service {
         return balancing;
     }
 
+    private void beginBalancing() {
+        NativeCalls.registerSensors();
+    }
+
     public void stopBalancing() {
         balancing = false;
         // Removes the notification
         stopForeground(true);
         stopSelf();
+
+        NativeCalls.unregisterSensors();
     }
 }
