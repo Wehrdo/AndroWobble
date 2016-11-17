@@ -23,7 +23,7 @@ import android.media.AudioManager;
 public class HowieEngine {
 
     public static long init(Context ctx) {
-        //System.loadLibrary("howie");
+        System.loadLibrary("howie-lib");
 
         //Check for optimal output sample rate and buffer size
         AudioManager am = (AudioManager) ctx.getSystemService(Context

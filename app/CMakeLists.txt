@@ -4,6 +4,19 @@
 
 cmake_minimum_required(VERSION 3.4.1)
 
+
+set(distribution_DIR ${CMAKE_CURRENT_SOURCE_DIR}../../distribution)
+add_library(lib_howie SHARED IMPORTED )
+set_target_properties(lib_howie PROPERTIES IMPORTED_LOCATION
+    ${distribution_DIR}/howie-lib/lib/${ANDROID_ABI}/libhowie-lib.so)
+
+
+# Specifies libraries CMake should link to your target library. You
+# can link multiple libraries, such as libraries you define in the
+# build script, prebuilt third-party libraries, or system libraries.
+
+
+
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds it for you.
@@ -18,7 +31,12 @@ add_library( # Sets the name of the library.
              # Provides a relative path to your source file(s).
              # Associated headers in the same location as their source
              # file are automatically included.
-             src/main/cpp/native-lib.cpp )
+             src/main/cpp/native-lib.cpp
+             src/main/cpp/pid.cpp
+             src/main/cpp/audio_uart.cpp )
+
+
+include_directories(${distribution_DIR}/howie-lib/include)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because system libraries are included in the search path by
@@ -34,10 +52,9 @@ find_library( # Sets the name of the path variable.
               log)
 find_library( android-lib
               android)
+find_library(OpenSLES-lib
+             OpenSLES)
 
-# Specifies libraries CMake should link to your target library. You
-# can link multiple libraries, such as libraries you define in the
-# build script, prebuilt third-party libraries, or system libraries.
 
 target_link_libraries( # Specifies the target library.
                        native-lib
@@ -45,4 +62,6 @@ target_link_libraries( # Specifies the target library.
                        # Links the target library to the log library
                        # included in the NDK.
                        ${log-lib}
-                       ${android-lib})
+                       ${android-lib}
+                       ${OpenSLES-lib}
+                       lib_howie)

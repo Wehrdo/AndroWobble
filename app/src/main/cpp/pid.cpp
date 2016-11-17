@@ -1,6 +1,6 @@
 #include <cmath>
 
-#define INTEGRAL_THRESHHOLD
+#define INTEGRAL_THRESHHOLD 10
 
 static double p = 0;
 static double i = 0;
@@ -16,7 +16,7 @@ double pidUpdate(double currAngle, double desiredAngle) {
 	double error = desiredAngle - currAngle;
 	double integralError = 0;
 
-	if(abs(error) < INTEGRAL_THRESHHOLD) {
+	if(fabs(error) < INTEGRAL_THRESHHOLD) {
 		integralError = integralError + error;
 	} else {
 		integralError = 0;

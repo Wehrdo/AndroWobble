@@ -1,4 +1,5 @@
 #include "native-lib.h"
+#include "audio_uart.h"
 
 #include <jni.h>
 #include <string>
@@ -119,22 +120,21 @@ static void unregisterSensors() {
 }
 
 
-
 extern "C" {
 
 JNIEXPORT void JNICALL
-Java_com_davidawehr_androwobble_NativeCalls_registerSensors(JNIEnv *env, jclass type) {
-    registerSensors();
-}
-
-JNIEXPORT void JNICALL
-Java_com_davidawehr_androwobble_NativeCalls_unregisterSensors(JNIEnv *env, jclass type) {
-    unregisterSensors();
-}
-
-JNIEXPORT void JNICALL
-Java_com_davidawehr_androwobble_NativeCalls_initSensors(JNIEnv *env, jclass type) {
+Java_com_davidawehr_androwobble_NativeCalls_beginBalancing(JNIEnv *env, jclass type) {
     initSensors();
+    registerSensors();
+    AudioUART::createStream();
+    AudioUART::begin_output();
+}
+
+JNIEXPORT void JNICALL
+Java_com_davidawehr_androwobble_NativeCalls_stopBalancing(JNIEnv *env, jclass type) {
+    unregisterSensors();
+    AudioUART::stop_output();
+    AudioUART::destroyStream();
 }
 
 }

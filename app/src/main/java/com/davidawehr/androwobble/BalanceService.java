@@ -13,7 +13,7 @@ import android.util.Log;
  * Created by dawehr on 11/9/2016.
  */
 
-//import com.example.android.howie.HowieEngine;
+import com.example.android.howie.HowieEngine;
 
 public class BalanceService extends Service {
     private static final int BAL_SERVICE_NOTIF_ID = 12345;
@@ -28,8 +28,7 @@ public class BalanceService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        NativeCalls.initSensors();
-        //HowieEngine.init(this);
+        HowieEngine.init(this);
     }
 
     @Override
@@ -105,7 +104,7 @@ public class BalanceService extends Service {
     }
 
     private void beginBalancing() {
-        NativeCalls.registerSensors();
+        NativeCalls.beginBalancing();
     }
 
     public void stopBalancing() {
@@ -114,6 +113,6 @@ public class BalanceService extends Service {
         stopForeground(true);
         stopSelf();
 
-        NativeCalls.unregisterSensors();
+        NativeCalls.stopBalancing();
     }
 }

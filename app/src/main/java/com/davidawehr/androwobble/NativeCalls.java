@@ -5,13 +5,8 @@ package com.davidawehr.androwobble;
  */
 
 public class NativeCalls {
+    public static native void beginBalancing();
 
-    // Must be called before registering sensors
-    public static native void initSensors();
-
-    // Initializes sensors to begin receiving data
-    public static native void registerSensors();
-
-    // Unregisters sensors. Should be called in onPause()
-    public static native void unregisterSensors();
+    public static native void stopBalancing();
+    
 }

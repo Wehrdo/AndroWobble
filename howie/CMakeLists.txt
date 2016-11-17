@@ -3,7 +3,7 @@
 # your build.
 
 cmake_minimum_required(VERSION 3.4.1)
-
+set(CMAKE_VERBOSE_MAKEFILE on)
 
 include_directories(src/main/jni/private/)
 
@@ -17,15 +17,18 @@ file(GLOB HEADERS src/main/jni/private/*.cpp)
 # automatically packages shared libraries with your APK.
 
 add_library( # Specifies the name of the library.
-             howie
+             howie-lib
 
              # Sets the library as a shared library.
-             STATIC
+             SHARED
 
              # Provides a relative path to your source file(s).
              ${SOURCES}
              ${HEADERS}
              )
+
+
+
 
 find_library( # Sets the name of the path variable.
               log-lib
@@ -34,15 +37,27 @@ find_library( # Sets the name of the path variable.
               # you want CMake to locate.
               log)
 
-find_library(OpenSLES-lib,
+find_library(OpenSLES-lib
              OpenSLES)
 
-#include_directories(${ANDROID_NDK}/platforms/${ANDROID_PLATFORM}/${ANDROID_ABI}/usr/include/SLES)
-
 target_link_libraries( # Specifies the target library.
-                       howie
+                       howie-lib
 
                        # Links the target library to the log library
                        # included in the NDK.
                        ${OpenSLES-lib}
                        ${log-lib})
+
+
+# copy out the lib binary and remove generated files
+set(distribution_DIR ${CMAKE_CURRENT_SOURCE_DIR}../../distribution)
+
+set_target_properties(howie-lib
+                      PROPERTIES
+                      LIBRARY_OUTPUT_DIRECTORY
+                      "${distribution_DIR}/howie-lib/lib/${ANDROID_ABI}")
+#add_custom_command(TARGET howie-lib POST_BUILD
+#                   COMMAND "${CMAKE_COMMAND}" -E
+#                   copy "${CMAKE_CURRENT_SOURCE_DIR}/src/jni/howie.h"
+#                   "${distribution_DIR}/howie-lib/include/howie.h.h"
+#                   COMMENT "Copying howie-lib to output directory")
