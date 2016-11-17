@@ -30,3 +30,9 @@ double pidUpdate(double currAngle, double desiredAngle) {
 
 	return (proportional + integral + derivative);
 } 
+
+void updateConstants(double _p, double _i, double _d) {
+	p = _p;
+	i = _i;
+	d = _d;
+}
