@@ -19,13 +19,17 @@ namespace AudioUART {
     void destroyStream();
     void begin_output();
     void stop_output();
+    void set_motors(char motorL, char motorR);
 
 struct PlayerState {
-    short* sineWaveBuffer;
+    short* bytes_wavetable;
+    int frames;
 };
 
 struct PlayerParams {
-    unsigned int playing;
+    char motorL_val;
+    char motorR_val;
+    bool motor_updated;
 };
 
 };

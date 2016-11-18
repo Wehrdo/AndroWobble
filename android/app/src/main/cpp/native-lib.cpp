@@ -81,9 +81,11 @@ static int sensorCallback(int fd, int events, void* data) {
         }
     }
 
-    if (c % 10 == 0) {
-        LOGV("smoothed: %.5f, gyro: %.5f, accel: %.5f", deviceAngle, gyro_d_angle, accel_angle);
-    }
+//    if (c % 100 == 0) {
+//        LOGV("smoothed: %.5f, gyro: %.5f, accel: %.5f", deviceAngle, gyro_d_angle, accel_angle);
+        char val = (deviceAngle / 1.57079) * 127;
+        AudioUART::set_motors(val, val);
+//    }
 
 
     // return 1 to continue receiving callbacks, 0 cancels callback
