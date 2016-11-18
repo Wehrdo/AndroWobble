@@ -30,45 +30,60 @@ SoftwareSerial mySerial(10, 11); // RX, TX
 
 void setup()
 {
- Serial.begin(9600);
+ Serial.begin(24000);
   // set the data rate for the SoftwareSerial port
-  mySerial.begin(9600);
+  mySerial.begin(24000);
 }
 
 signed char getMotor1Update() {
   if (Serial.available() > 0) {
-    return (signed char) Serial.read();
+    signed char input = (signed char) Serial.read();
+    Serial.println("hardware" + input);
+    return input;
+  } else {
+    return -1;
   }
 }
+static int count = 0;
 
 signed char getMotor2Update() {
   if (mySerial.available() > 0) {
-    return (signed char) mySerial.read();
+    count++;
+    signed char input = (signed char) mySerial.read();
+    if(count%10 == 0) {
+      Serial.println(input);
+    }
+    return input;
+  } else {
+    return -1;
   }
 }
 
 void loop()
 {
-  signed char motor1Val = getMotor1Update();
+  //signed char motor1Val = getMotor1Update();
   signed char motor2Val = getMotor2Update();
 
-  motor1Val*=2;
-  motor2Val*=2;
+//  if (motor1Val != -1 && motor2Val != -1) {
+//    motor1Val*=2;
+//    motor2Val*=2;
+//    
+//    if(motor1Val < -255) {
+//      motor1Val = -255;
+//    } else if (motor1Val > 255) {
+//      motor1Val = 255;
+//    }
+//  
+//    if(motor2Val < -255) {
+//      motor2Val = -255;
+//    } else if (motor2Val > 255) {
+//      motor2Val = 255;
+//    }
+//  
+//    motor1.drive(motor1Val);
+//    motor2.drive(motor2Val);
+//  }
   
-  if(motor1Val < -255) {
-    motor1Val = -255;
-  } else if (motor1Val > 255) {
-    motor1Val = 255;
-  }
-
-  if(motor2Val < -255) {
-    motor2Val = -255;
-  } else if (motor2Val > 255) {
-    motor2Val = 255;
-  }
-
-  motor1.drive(motor1Val);
-  motor2.drive(motor2Val);
 }
 /**
    //Use of the drive function which takes as arguements the speed
