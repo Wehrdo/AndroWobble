@@ -7,4 +7,10 @@ Each packet will be in 3 bytes
 --------------------------------------------------------------------------------
 |					0xBE					|						XXXX XXDM					|	 1111 1111 - 0000 0000 |
 --------------------------------------------------------------------------------
-				
+
+
+if D = 0 , direction = forward
+if D = 1 , direction = backward
+
+if M = 0 , motor = motor_one
+if M = 1 , motor = motor_two				
