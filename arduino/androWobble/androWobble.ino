@@ -1,7 +1,6 @@
 // This is the library for the TB6612 that contains the class Motor and all the
 // functions
 #include <SparkFun_TB6612.h>
-#include <SoftwareSerial.h>
 
 // Pins for all inputs, keep in mind the PWM defines must be on PWM pins
 // the default pins listed are the ones used on the Redbot (ROB-12097) with
@@ -14,10 +13,27 @@
 #define PWMB 6
 #define STBY 9
 
+#define BEGIN_CHAR 0xBE
+
+#define DIRECTION_MASK(x) (x & 0x02)
+#define MOTOR_MASK(x)      (x & 0x01)
+
+#define FORWARD 0
+#define BACKWARD 1
+
+#define MOTOR_ONE 0
+#define MOTOR_TWO 1
+
+
+
+
 // these constants are used to allow you to make your motor configuration 
 // line up with function names like forward.  Value can be 1 or -1
 const int offsetA = 1;
 const int offsetB = 1;
+
+static int motor1Val = 0;
+static int motor2Val = 0;
 
 // Initializing motors.  The library will allow you to initialize as many
 // motors as you have memory for.  If you are using functions like forward
@@ -26,112 +42,43 @@ const int offsetB = 1;
 Motor motor1 = Motor(AIN1, AIN2, PWMA, offsetA, STBY);
 Motor motor2 = Motor(BIN1, BIN2, PWMB, offsetB, STBY);
 
-SoftwareSerial mySerial(10, 11); // RX, TX
-
+void protectBounds(int * motorVal) {
+  if(*motorVal < -255) {
+    *motorVal = -255;
+  } else if (*motorVal > 255) {
+    *motorVal = 255;
+  }
+}
 void setup()
 {
- Serial.begin(24000);
-  // set the data rate for the SoftwareSerial port
-  mySerial.begin(24000);
-}
-
-signed char getMotor1Update() {
-  if (Serial.available() > 0) {
-    signed char input = (signed char) Serial.read();
-    Serial.println("hardware" + input);
-    return input;
-  } else {
-    return -1;
-  }
-}
-static int count = 0;
-
-signed char getMotor2Update() {
-  if (mySerial.available() > 0) {
-    count++;
-    signed char input = (signed char) mySerial.read();
-    if(count%10 == 0) {
-      Serial.println(input);
-    }
-    return input;
-  } else {
-    return -1;
-  }
+ Serial.begin(9600);
 }
 
 void loop()
 {
-  //signed char motor1Val = getMotor1Update();
-  signed char motor2Val = getMotor2Update();
+  if (Serial.available() > 0) { 
+    if(Serial.read() ==  BEGIN_CHAR) {
+      int optionsByte = Serial.read();
 
-//  if (motor1Val != -1 && motor2Val != -1) {
-//    motor1Val*=2;
-//    motor2Val*=2;
-//    
-//    if(motor1Val < -255) {
-//      motor1Val = -255;
-//    } else if (motor1Val > 255) {
-//      motor1Val = 255;
-//    }
-//  
-//    if(motor2Val < -255) {
-//      motor2Val = -255;
-//    } else if (motor2Val > 255) {
-//      motor2Val = 255;
-//    }
-//  
-//    motor1.drive(motor1Val);
-//    motor2.drive(motor2Val);
-//  }
-  
+      int motorChoice =  MOTOR_MASK(optionsByte);
+      int directionChoice = DIRECTION_MASK(optionsByte);
+
+      int motorVal = Serial.read();
+      protectBounds(&motorVal);
+      
+      if(motorChoice == MOTOR_ONE) {
+        if(directionChoice == FORWARD) {
+          motor1.drive(motorVal);
+        } else if (directionChoice == BACKWARD) {
+          motor1.drive(-1*motorVal);
+        }
+      } else if (motorChoice == MOTOR_TWO) {
+        if(directionChoice == FORWARD) {
+          motor2.drive(motorVal);
+        } else if (directionChoice == BACKWARD) {
+          motor2.drive(-1*motorVal);
+        }     
+      }
+    }
+  }
 }
-/**
-   //Use of the drive function which takes as arguements the speed
-   //and optional duration.  A negative speed will cause it to go
-   //backwards.  Speed can be from -255 to 255.  Also use of the 
-   //brake function which takes no arguements.
-   motor1.drive(255,1000);
-   motor1.drive(-255,1000);
-   motor1.brake();
-   delay(1000);
-   
-   //Use of the drive function which takes as arguements the speed
-   //and optional duration.  A negative speed will cause it to go
-   //backwards.  Speed can be from -255 to 255.  Also use of the 
-   //brake function which takes no arguements.
-   motor2.drive(255,1000);
-   motor2.drive(-255,1000);
-   motor2.brake();
-   delay(1000);
-   
-   //Use of the forward function, which takes as arguements two motors
-   //and optionally a speed.  If a negative number is used for speed
-   //it will go backwards
-   forward(motor1, motor2, 150);
-   delay(1000);
-   
-   //Use of the back function, which takes as arguments two motors 
-   //and optionally a speed.  Either a positive number or a negative
-   //number for speed will cause it to go backwards
-   back(motor1, motor2, -150);
-   delay(1000);
-   
-   //Use of the brake function which takes as arguments two motors.
-   //Note that functions do not stop motors on their own.
-   brake(motor1, motor2);
-   delay(1000);
-   
-   //Use of the left and right functions which take as arguements two
-   //motors and a speed.  This function turns both motors to move in 
-   //the appropriate direction.  For turning a single motor use drive.
-   left(motor1, motor2, 25);
-   delay(1000);
-   right(motor1, motor2, 25);
-   delay(1000);
-   
-   //Use of brake again.
-   brake(motor1, motor2);
-   delay(1000);
-   
-}
-**/
