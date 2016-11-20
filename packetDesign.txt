@@ -14,3 +14,23 @@ if D = 1 , direction = backward
 
 if M = 0 , motor = motor_one
 if M = 1 , motor = motor_two				
+
+
+Alernative:
+Each packet will be 4 bytes
+
+----------------------------------------------------------------------------------------------------------
+|  			    1				    |  							2							|					 	3	 	  			 |				 		4	  				 |
+----------------------------------------------------------------------------------------------------------
+|			Start Byte		    |    [R]/[L] Direction Byte   |				 PWM Val L			 |				PWM Val R				 |
+----------------------------------------------------------------------------------------------------------
+|					0xBE					|						XXXX XXRL					|	 1111 1111 - 0000 0000 |	 1111 1111 - 0000 0000 |
+----------------------------------------------------------------------------------------------------------
+
+
+if L = 0 , left motor direction = forward
+if L = 1 , left direction = backward
+
+if R = 0 , right motor direction = forward
+if R = 1 , right direction = backward
+	
