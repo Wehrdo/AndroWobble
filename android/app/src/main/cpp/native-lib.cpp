@@ -1,12 +1,12 @@
 #include "native-lib.h"
 #include "audio_uart.h"
+#include "pid.h"
 
 #include <jni.h>
 #include <string>
 #include <android/sensor.h>
-#include <android/log.h>
 #include <assert.h>
-#include <cmath>
+#include <algorithm>
 
 #define GYRO_RATE 100
 #define ACCEL_RATE GYRO_RATE
@@ -83,8 +83,9 @@ static int sensorCallback(int fd, int events, void* data) {
 
 //    if (c % 100 == 0) {
 //        LOGV("smoothed: %.5f, gyro: %.5f, accel: %.5f", deviceAngle, gyro_d_angle, accel_angle);
-        char val = (deviceAngle / 1.57079) * 127;
-        AudioUART::set_motors(val, val);
+        double pid_actuate = pidUpdate(deviceAngle, 0);
+        pid_actuate = std::max(-255.0, std::min(255.0, pid_actuate));
+        AudioUART::set_motors(pid_actuate, pid_actuate);
 //    }
 
 
@@ -137,6 +138,14 @@ Java_com_davidawehr_androwobble_NativeCalls_stopBalancing(JNIEnv *env, jclass ty
     unregisterSensors();
     AudioUART::stop_output();
     AudioUART::destroyStream();
+}
+
+
+JNIEXPORT void JNICALL
+Java_com_davidawehr_androwobble_NativeCalls_setConstants(JNIEnv *env, jclass type, jdouble p,
+                                                         jdouble i, jdouble d) {
+
+    updateConstants(p, i, d);
 }
 
 }

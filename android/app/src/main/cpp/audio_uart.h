@@ -19,16 +19,20 @@ namespace AudioUART {
     void destroyStream();
     void begin_output();
     void stop_output();
-    void set_motors(char motorL, char motorR);
+    void set_motors(int motorL, int motorR);
 
 struct PlayerState {
     short* bytes_wavetable;
+    // The length of each byte, in samples, including all stop its
+    int frame_width;
     int frames;
+
+
 };
 
 struct PlayerParams {
-    char motorL_val;
-    char motorR_val;
+    int motorL_val;
+    int motorR_val;
     bool motor_updated;
 };
 

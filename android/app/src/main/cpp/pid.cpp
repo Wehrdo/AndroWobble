@@ -1,6 +1,6 @@
 #include <cmath>
-
-#define INTEGRAL_THRESHHOLD 10
+#include "pid.h"
+#define INTEGRAL_THRESHHOLD 0.1
 
 static double p = 0;
 static double i = 0;
@@ -24,7 +24,7 @@ double pidUpdate(double currAngle, double desiredAngle) {
 
 	proportional = error * p;
 	integral = integralError * i;
-	derivative = (lastAngle - currAngle) * d;
+	derivative = (currAngle - lastAngle) * d;
 
 	lastAngle = currAngle;
 

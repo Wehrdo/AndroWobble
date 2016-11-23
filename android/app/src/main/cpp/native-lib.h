@@ -5,6 +5,7 @@
 #ifndef ANDROWOBBLE_NATIVE_LIB_H
 #define ANDROWOBBLE_NATIVE_LIB_H
 
+#include <android/log.h>
 #define LOG_TAG "AndroWobble-native"
 
 

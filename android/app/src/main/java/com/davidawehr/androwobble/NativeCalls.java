@@ -8,5 +8,7 @@ public class NativeCalls {
     public static native void beginBalancing();
 
     public static native void stopBalancing();
+
+    public static native void setConstants(double p, double i, double d);
     
 }
