@@ -69,7 +69,7 @@ namespace AudioUART {
 
         struct PlayerState *playerState = (struct PlayerState *) state->data;
         struct PlayerParams *playerParams = (struct PlayerParams *) params->data;
-
+        LOGV("Sample rate: %d", pHDC->sampleRate);
         createWaveTable(pHDC->framesPerPeriod, pHDC->channelCount, pHDC->sampleRate, playerState);
 
         playerParams->motor_updated = 0;
@@ -79,6 +79,8 @@ namespace AudioUART {
     static HowieError OnCleanupCallback(
             const HowieStream *stream,
             const HowieBuffer *state) {
+        struct PlayerState* playerState = (struct PlayerState *) state->data;
+        free(playerState->bytes_wavetable);
         return HOWIE_SUCCESS;
     }
 
@@ -133,9 +135,11 @@ namespace AudioUART {
     }
 
     void createStream() {
+        LOGV("createStream");
         // Creates stream
         HowieStreamCreationParams hscp = {
-                sizeof(HowieStreamCreationParams), HOWIE_STREAM_DIRECTION_PLAYBACK,
+                sizeof(HowieStreamCreationParams),
+                HOWIE_STREAM_DIRECTION_PLAYBACK,
                 onDeviceChanged,
                 onProcess,
                 OnCleanupCallback,
@@ -147,12 +151,14 @@ namespace AudioUART {
     }
 
     void destroyStream() {
+        LOGV("destroyStream");
         // Destroys stream
-        HowieStream *stream = reinterpret_cast<HowieStream *>(stream_id);
-        HowieStreamDestroy(stream);
+        HowieStream *pstream = reinterpret_cast<HowieStream *>(stream_id);
+        HowieStreamDestroy(pstream);
     }
 
     void begin_output() {
+        LOGV("begin_output");
         struct PlayerParams parms = {0, 0, true};
         HowieStream *pstream = (HowieStream *) (void *) stream_id;
         HowieStreamSetState(pstream, HOWIE_STREAM_STATE_PLAYING);
@@ -160,9 +166,10 @@ namespace AudioUART {
     }
 
     void stop_output() {
-        struct PlayerParams parms;
+        LOGV("stop_output");
+//        struct PlayerParams parms;
         HowieStream *pstream = (HowieStream *) (void *) stream_id;
-        HowieStreamSendParameters(pstream, &parms, sizeof(parms), 1);
+//        HowieStreamSendParameters(pstream, &parms, sizeof(parms), 1);
         HowieStreamSetState(pstream, HOWIE_STREAM_STATE_STOPPED);
     }
 

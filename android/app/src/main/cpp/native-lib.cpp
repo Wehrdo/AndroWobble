@@ -18,6 +18,8 @@ const ASensor* gyroSensor;
 ASensorEventQueue* sensorEventQueue;
 ALooper* looper;
 
+static bool streamExists = false;
+
 // Whether the gyroscope and accelerometer values are fresh
 bool gyroFresh = false;
 bool accelFresh = false;
@@ -54,7 +56,6 @@ static int sensorCallback(int fd, int events, void* data) {
             case ASENSOR_TYPE_ACCELEROMETER:
                 accel_angle = accelToAngle(event.acceleration.x, event.acceleration.y, event.acceleration.z);
                 accelFresh = true;
-//                LOGV("Accel: %f, %f, %f\n", event.acceleration.x, event.acceleration.y, event.acceleration.z);
                 break;
             case ASENSOR_TYPE_GYROSCOPE:
                 gyro_dt_ns = event.timestamp - lastGyroTime;
@@ -83,10 +84,10 @@ static int sensorCallback(int fd, int events, void* data) {
 
 //    if (c % 100 == 0) {
 //        LOGV("smoothed: %.5f, gyro: %.5f, accel: %.5f", deviceAngle, gyro_d_angle, accel_angle);
-        double pid_actuate = pidUpdate(deviceAngle, 0);
-        pid_actuate = std::max(-255.0, std::min(255.0, pid_actuate));
-        AudioUART::set_motors(pid_actuate, pid_actuate);
 //    }
+    double pid_actuate = pidUpdate(deviceAngle, 0);
+    pid_actuate = std::max(-255.0, std::min(255.0, pid_actuate));
+    AudioUART::set_motors(pid_actuate, pid_actuate);
 
 
     // return 1 to continue receiving callbacks, 0 cancels callback
@@ -129,7 +130,10 @@ JNIEXPORT void JNICALL
 Java_com_davidawehr_androwobble_NativeCalls_beginBalancing(JNIEnv *env, jclass type) {
     initSensors();
     registerSensors();
-    AudioUART::createStream();
+    if (!streamExists) {
+        AudioUART::createStream();
+        streamExists = true;
+    }
     AudioUART::begin_output();
 }
 
@@ -137,7 +141,16 @@ JNIEXPORT void JNICALL
 Java_com_davidawehr_androwobble_NativeCalls_stopBalancing(JNIEnv *env, jclass type) {
     unregisterSensors();
     AudioUART::stop_output();
-    AudioUART::destroyStream();
+//    AudioUART::destroyStream();
+}
+
+
+JNIEXPORT void JNICALL
+Java_com_davidawehr_androwobble_NativeCalls_destroyStream(JNIEnv *env, jclass type) {
+    if (streamExists) {
+        AudioUART::destroyStream();
+        streamExists = false;
+    }
 }
 
 

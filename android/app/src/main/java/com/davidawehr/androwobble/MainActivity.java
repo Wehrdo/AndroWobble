@@ -9,12 +9,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+
 import com.davidawehr.androwobble.BalanceService.BalanceBinder;
 
 public class MainActivity extends AppCompatActivity {
     BalanceService balService;
     boolean bound = false;
     Button toggleBalBtn;
+    EditText p_text, i_text, d_text;
 
     // Used to load the 'native-lib' library on application startup.
 //    static {
@@ -26,7 +29,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         toggleBalBtn = (Button) findViewById(R.id.start_service_btn);
-        //NativeCalls.initSensors();
+        p_text = (EditText) findViewById(R.id.p_edit);
+        i_text = (EditText) findViewById(R.id.i_edit);
+        d_text = (EditText) findViewById(R.id.d_edit);
     }
 
     @Override
@@ -101,4 +106,11 @@ public class MainActivity extends AppCompatActivity {
             bound = false;
         }
     };
+
+    public void onConstantsClick(View view) {
+        double p_val = Double.parseDouble(p_text.getText().toString());
+        double i_val = Double.parseDouble(i_text.getText().toString());
+        double d_val = Double.parseDouble(d_text.getText().toString());
+        NativeCalls.setConstants(p_val, i_val, d_val);
+    }
 }

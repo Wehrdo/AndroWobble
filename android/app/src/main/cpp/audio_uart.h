@@ -9,6 +9,7 @@
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
 #include "howie.h"
+#include "common.h"
 
 #include <malloc.h>
 #include <cmath>

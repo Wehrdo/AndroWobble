@@ -28,12 +28,14 @@ public class BalanceService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        HowieEngine.init(this);
+        howieEngine = HowieEngine.init(this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        // Clean up OpenSL stream
+        NativeCalls.destroyStream();
         // TODO: Stop balancing if balancing
         if (balancing) {
             Log.v("", "stopping balancing");
@@ -108,11 +110,11 @@ public class BalanceService extends Service {
     }
 
     public void stopBalancing() {
+        NativeCalls.stopBalancing();
+
         balancing = false;
         // Removes the notification
         stopForeground(true);
         stopSelf();
-
-        NativeCalls.stopBalancing();
     }
 }

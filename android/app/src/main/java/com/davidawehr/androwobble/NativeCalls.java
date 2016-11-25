@@ -10,5 +10,6 @@ public class NativeCalls {
     public static native void stopBalancing();
 
     public static native void setConstants(double p, double i, double d);
-    
+
+    public static native void destroyStream();
 }
