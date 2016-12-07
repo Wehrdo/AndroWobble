@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         // Bind to the balancing service on start.
         Intent bindInt = new Intent(this, BalanceService.class);
         bindService(bindInt, mConnection, Context.BIND_AUTO_CREATE);
+
     }
 
     @Override

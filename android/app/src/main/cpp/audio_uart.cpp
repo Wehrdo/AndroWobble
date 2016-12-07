@@ -110,21 +110,32 @@ namespace AudioUART {
 
 
             size_t copy_size = playerState->frame_width * sizeof(short);
-            // Copy start byte
-            memcpy(out->data, start_byte, copy_size);
-            // Copy direction byte
-            memcpy(out->data + copy_size, dir_byte, copy_size);
-            // Copy left value byte
-            memcpy(out->data + (2 * copy_size), left_byte, copy_size);
-            // Copy right value byte
-            memcpy(out->data + (3 * copy_size),right_byte, copy_size);
+//            // Copy start byte
+//            memcpy(out->data, start_byte, copy_size);
+//            // Copy direction byte
+//            memcpy(out->data + copy_size, dir_byte, copy_size);
+//            // Copy left value byte
+//            memcpy(out->data + (2 * copy_size), left_byte, copy_size);
+//            // Copy right value byte
+//            memcpy(out->data + (3 * copy_size),right_byte, copy_size);
+//
+//            // Fill out remaining buffer with high
+//            size_t left_to_copy = out->byteCount - 4*copy_size;
+//            assert(left_to_copy >= 0);
+//            if (left_to_copy) {
+//                memset(out->data + 4*copy_size, MAXIMUM_AMPLITUDE_VALUE, left_to_copy);
+//            }
 
-            // Fill out remaining buffer with high
-            size_t left_to_copy = out->byteCount - 4*copy_size;
+
+            /////// Testing /////////
+            memcpy(out->data, left_byte, copy_size);
+            size_t left_to_copy = out->byteCount - copy_size;
             assert(left_to_copy >= 0);
             if (left_to_copy) {
-                memset(out->data + (playerState->frames * sizeof(short)), MAXIMUM_AMPLITUDE_VALUE, left_to_copy);
+                memset(out->data + 4*copy_size, MAXIMUM_AMPLITUDE_VALUE, left_to_copy);
             }
+            ///////// End testing ////////
+
             playerParams->motor_updated = false;
         } else {
             // Hold line high if no data

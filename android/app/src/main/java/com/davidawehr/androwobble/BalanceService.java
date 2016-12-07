@@ -28,7 +28,7 @@ public class BalanceService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        howieEngine = HowieEngine.init(this);
+        HowieEngine.init(this);
     }
 
     @Override

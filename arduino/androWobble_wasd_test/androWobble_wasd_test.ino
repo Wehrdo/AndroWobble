@@ -65,7 +65,7 @@ void loop()
           break;
       }
   
-      delay(500);
+      delay(2000);
       brake(motor1, motor2);
     }
   }

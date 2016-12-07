@@ -82,11 +82,12 @@ static int sensorCallback(int fd, int events, void* data) {
         }
     }
 
-//    if (c % 100 == 0) {
-//        LOGV("smoothed: %.5f, gyro: %.5f, accel: %.5f", deviceAngle, gyro_d_angle, accel_angle);
-//    }
     double pid_actuate = pidUpdate(deviceAngle, 0);
     pid_actuate = std::max(-255.0, std::min(255.0, pid_actuate));
+    if (c % 100 == 0) {
+        LOGV("smoothed: %.5f, gyro: %.5f, accel: %.5f", deviceAngle, gyro_d_angle, accel_angle);
+        LOGV("actuate: %f", pid_actuate);
+    }
     AudioUART::set_motors(pid_actuate, pid_actuate);
 
 

@@ -38,7 +38,7 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:hint="P"
-                android:text="200"
+                android:text="400"
                 android:inputType="numberDecimal"/>
         </LinearLayout>
 
@@ -78,6 +78,7 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/update_const_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Update Constants"
