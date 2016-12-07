@@ -29,13 +29,14 @@ namespace AudioUART {
 
         // First figure out how many samples we need and allocate memory for the tables
         state->frames = frames;
+        // Number of bits in each byte frame (start bits, stop bits, data)
         int byte_frame_bits = 8 + START_BITS + STOP_BITS;
         // Number of samples per UART bit
         float bit_width = sampleRate / BAUD_RATE;
         // Number of samples per byte frame
         int frame_width = ceil(byte_frame_bits * bit_width);
         state->frame_width = frame_width;
-        state->bytes_wavetable = (short *) malloc(sizeof(*state->bytes_wavetable) * 256 * frame_width);
+        state->bytes_wavetable = (short *) malloc(sizeof(short) * 256 * frame_width);
 
         // Fill out bytes wavetable
         for (int count = -128; count < 128; count++) {
@@ -59,6 +60,12 @@ namespace AudioUART {
                 }
                 wave[i] = to_send;
             }
+        }
+
+        // Create memory for holding line high
+        state->high_line = (short *) malloc(sizeof(short) * frames);
+        for (int i = 0; i < frames; i++) {
+            state->high_line[i] = MAXIMUM_AMPLITUDE_VALUE;
         }
     }
 
@@ -110,36 +117,36 @@ namespace AudioUART {
 
 
             size_t copy_size = playerState->frame_width * sizeof(short);
-//            // Copy start byte
-//            memcpy(out->data, start_byte, copy_size);
-//            // Copy direction byte
-//            memcpy(out->data + copy_size, dir_byte, copy_size);
-//            // Copy left value byte
-//            memcpy(out->data + (2 * copy_size), left_byte, copy_size);
-//            // Copy right value byte
-//            memcpy(out->data + (3 * copy_size),right_byte, copy_size);
-//
-//            // Fill out remaining buffer with high
-//            size_t left_to_copy = out->byteCount - 4*copy_size;
-//            assert(left_to_copy >= 0);
-//            if (left_to_copy) {
-//                memset(out->data + 4*copy_size, MAXIMUM_AMPLITUDE_VALUE, left_to_copy);
-//            }
+            // Copy start byte
+            memcpy(out->data, start_byte, copy_size);
+            // Copy direction byte
+            memcpy(out->data + copy_size, dir_byte, copy_size);
+            // Copy left value byte
+            memcpy(out->data + (2 * copy_size), left_byte, copy_size);
+            // Copy right value byte
+            memcpy(out->data + (3 * copy_size), right_byte, copy_size);
+
+            // Fill out remaining buffer with high
+            size_t left_to_copy = out->byteCount - 4*copy_size;
+            assert(left_to_copy >= 0);
+            if (left_to_copy) {
+                memcpy(out->data + 4*copy_size, playerState->high_line, left_to_copy);
+            }
 
 
             /////// Testing /////////
-            memcpy(out->data, left_byte, copy_size);
-            size_t left_to_copy = out->byteCount - copy_size;
-            assert(left_to_copy >= 0);
-            if (left_to_copy) {
-                memset(out->data + 4*copy_size, MAXIMUM_AMPLITUDE_VALUE, left_to_copy);
-            }
+//            memcpy(out->data, left_byte, copy_size);
+//            size_t left_to_copy = out->byteCount - copy_size;
+//            assert(left_to_copy >= 0);
+//            if (left_to_copy) {
+//                memcpy(out->data + copy_size, playerState->high_line, left_to_copy);
+//            }
             ///////// End testing ////////
 
             playerParams->motor_updated = false;
         } else {
             // Hold line high if no data
-            memset(out->data, MAXIMUM_AMPLITUDE_VALUE, out->byteCount);
+            memcpy(out->data, playerState->high_line, out->byteCount);
         }
 
         return HOWIE_SUCCESS;

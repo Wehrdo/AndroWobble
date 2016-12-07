@@ -24,6 +24,7 @@ namespace AudioUART {
 
 struct PlayerState {
     short* bytes_wavetable;
+    short* high_line;
     // The length of each byte, in samples, including all stop its
     int frame_width;
     int frames;
