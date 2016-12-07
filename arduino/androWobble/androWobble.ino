@@ -15,32 +15,8 @@
 
 #define BEGIN_CHAR 0xBE
 
-#define DIRECTION_MASK(x) (x & 0x02)
-#define MOTOR_MASK(x)      (x & 0x01)
-
-#define FORWARD 0
-#define BACKWARD 1
-
-#define MOTOR_ONE 0
-#define MOTOR_TWO 1
-
-
-
-
-// these constants are used to allow you to make your motor configuration 
-// line up with function names like forward.  Value can be 1 or -1
-const int offsetA = 1;
-const int offsetB = 1;
-
-static int motor1Val = 0;
-static int motor2Val = 0;
-
-// Initializing motors.  The library will allow you to initialize as many
-// motors as you have memory for.  If you are using functions like forward
-// that take 2 motors as arguements you can either write new functions or
-// call the function more than once.
-Motor motor1 = Motor(AIN1, AIN2, PWMA, offsetA, STBY);
-Motor motor2 = Motor(BIN1, BIN2, PWMB, offsetB, STBY);
+#define LEFT_MOTOR_DIR_MASK(x)      (x & 0x01)
+#define RIGHT_MOTOR_DIR_MASK(x)      (x & 0x02)
 
 void protectBounds(int * motorVal) {
   if(*motorVal < -255) {
@@ -51,7 +27,11 @@ void protectBounds(int * motorVal) {
 }
 void setup()
 {
- Serial.begin(9600);
+  pinMode(L_IN1, OUTPUT);
+  pinMode(L_IN2, OUTPUT);
+  pinMode(R_IN1, OUTPUT);
+  pinMode(R_IN2, OUTPUT);
+  Serial.begin(9600);
 }
 
 void loop()
@@ -60,25 +40,44 @@ void loop()
     if(Serial.read() ==  BEGIN_CHAR) {
       int optionsByte = Serial.read();
 
-      int motorChoice =  MOTOR_MASK(optionsByte);
-      int directionChoice = DIRECTION_MASK(optionsByte);
+      int leftMotorDir =  LEFT_MOTOR_DIR_MASK(optionsByte);
+      int rightMotorDir =  RIGHT_MOTOR_DIR_MASK(optionsByte);
 
-      int motorVal = Serial.read();
-      protectBounds(&motorVal);
-      
-      if(motorChoice == MOTOR_ONE) {
-        if(directionChoice == FORWARD) {
-          motor1.drive(motorVal);
-        } else if (directionChoice == BACKWARD) {
-          motor1.drive(-1*motorVal);
-        }
-      } else if (motorChoice == MOTOR_TWO) {
-        if(directionChoice == FORWARD) {
-          motor2.drive(motorVal);
-        } else if (directionChoice == BACKWARD) {
-          motor2.drive(-1*motorVal);
-        }     
-      }
+      int leftMotorVal= Serial.read();
+      int rightMotorVal = Serial.read();
+      //protectBounds(&leftMotorVal);
+      //protectBounds(&rightMotorVal);
+
+      motorL_drive(leftMotorDir, leftMotorVal);
+      motorR_drive(rightMotorDir, rightMotorVal);
     }
+  }
+}
+
+
+void motorL_drive(int forward, int val) {
+  val = 255 - val;
+  // Forward == clockwise, current from OUT1 to OUT2
+  if (forward) {
+    digitalWrite(L_IN1, HIGH);
+    analogWrite(L_IN2, val);
+  }
+  else {
+    analogWrite(L_IN1, val);
+    digitalWrite(L_IN2, HIGH);
+  }
+}
+
+
+void motorR_drive(int forward, int val) {
+  val = 255 - val;
+  // Forward == clockwise, current from OUT1 to OUT2
+  if (forward) {
+    digitalWrite(R_IN1, HIGH);
+    analogWrite(R_IN2, val);
+  }
+  else {
+    analogWrite(R_IN1, val);
+    digitalWrite(R_IN2, HIGH);
   }
 }
