@@ -1,17 +1,7 @@
-// This is the library for the TB6612 that contains the class Motor and all the
-// functions
-#include <SparkFun_TB6612.h>
-
-// Pins for all inputs, keep in mind the PWM defines must be on PWM pins
-// the default pins listed are the ones used on the Redbot (ROB-12097) with
-// the exception of STBY which the Redbot controls with a physical switch
-#define AIN1 2
-#define BIN1 7
-#define AIN2 4
-#define BIN2 8
-#define PWMA 5
-#define PWMB 6
-#define STBY 9
+#define L_IN1 3
+#define L_IN2 9
+#define R_IN1 10
+#define R_IN2 11
 
 #define BEGIN_CHAR 0xBE
 
@@ -25,6 +15,7 @@ void protectBounds(int * motorVal) {
     *motorVal = 255;
   }
 }
+
 void setup()
 {
   pinMode(L_IN1, OUTPUT);
