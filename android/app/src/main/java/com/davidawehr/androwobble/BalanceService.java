@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -22,6 +23,9 @@ public class BalanceService extends Service {
 
     private static boolean balancing = false;
     private final IBinder mBinder = new BalanceBinder();
+
+    PowerManager.WakeLock mWakeLock;
+
     static {
         System.loadLibrary("native-lib");
     }
@@ -107,11 +111,17 @@ public class BalanceService extends Service {
 
     private void beginBalancing() {
         NativeCalls.beginBalancing();
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                "MyWakelockTag");
+        mWakeLock.acquire();
     }
 
     public void stopBalancing() {
         NativeCalls.stopBalancing();
-
+        if (mWakeLock.isHeld()) {
+            mWakeLock.release();
+        }
         balancing = false;
         // Removes the notification
         stopForeground(true);

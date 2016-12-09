@@ -9,10 +9,10 @@
 #define RIGHT_MOTOR_DIR_MASK(x)      (x & 0x02)
 
 void protectBounds(int * motorVal) {
-  if(*motorVal < -255) {
-    *motorVal = -255;
-  } else if (*motorVal > 255) {
-    *motorVal = 255;
+  if(*motorVal < -127) {
+    *motorVal = -127;
+  } else if (*motorVal > 127) {
+    *motorVal = 127;
   }
 }
 
@@ -22,22 +22,29 @@ void setup()
   pinMode(L_IN2, OUTPUT);
   pinMode(R_IN1, OUTPUT);
   pinMode(R_IN2, OUTPUT);
-  Serial.begin(9600);
+  Serial.begin(24000);
+}
+
+int remap(int val, float from, float to) {
+  if (val == 0) {return val;}
+  return (val * ((to - from) / to)) + from;
 }
 
 void loop()
 {
-  if (Serial.available() > 0) { 
+  if (Serial.available() >= 4) { 
     if(Serial.read() ==  BEGIN_CHAR) {
       int optionsByte = Serial.read();
 
       int leftMotorDir =  LEFT_MOTOR_DIR_MASK(optionsByte);
       int rightMotorDir =  RIGHT_MOTOR_DIR_MASK(optionsByte);
 
-      int leftMotorVal= Serial.read();
-      int rightMotorVal = Serial.read();
-      //protectBounds(&leftMotorVal);
-      //protectBounds(&rightMotorVal);
+      int leftMotorVal= remap(Serial.read(), 24, 255);
+      int rightMotorVal = remap(Serial.read(), 24, 255);
+
+      //Serial.println(optionsByte);
+      protectBounds(&leftMotorVal);
+      protectBounds(&rightMotorVal);
 
       motorL_drive(leftMotorDir, leftMotorVal);
       motorR_drive(rightMotorDir, rightMotorVal);
@@ -46,7 +53,7 @@ void loop()
 }
 
 
-void motorL_drive(int forward, int val) {
+void motorL_drive(int forward, unsigned char val) {
   val = 255 - val;
   // Forward == clockwise, current from OUT1 to OUT2
   if (forward) {
@@ -60,7 +67,7 @@ void motorL_drive(int forward, int val) {
 }
 
 
-void motorR_drive(int forward, int val) {
+void motorR_drive(int forward, unsigned char val) {
   val = 255 - val;
   // Forward == clockwise, current from OUT1 to OUT2
   if (forward) {

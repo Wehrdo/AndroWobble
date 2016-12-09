@@ -12,19 +12,21 @@ void setup() {
 }
 
 void loop() {
-  motorL_drive(1, 255);
-  delay(1000);
-  motorL_drive(0, 255);
-  delay(1000);
-  motorL_drive(1, 0);
-  delay(1000);
-  
-  motorR_drive(1, 255);
-  delay(1000);
-  motorR_drive(0, 255);
-  delay(1000);
-  motorR_drive(1, 0);
-  delay(1000);
+  motorL_drive(1, 24);
+  motorR_drive(1, 24);
+//  motorL_drive(1, 255);
+//  delay(1000);
+//  motorL_drive(0, 255);
+//  delay(1000);
+//  motorL_drive(1, 0);
+//  delay(1000);
+//  
+//  motorR_drive(1, 255);
+//  delay(1000);
+//  motorR_drive(0, 255);
+//  delay(1000);
+//  motorR_drive(1, 0);
+//  delay(1000);
 }
 
 void motorL_drive(int forward, int val) {

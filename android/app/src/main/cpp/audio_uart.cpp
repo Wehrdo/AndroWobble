@@ -10,7 +10,7 @@
 
 #define MAXIMUM_AMPLITUDE_VALUE 32767
 #define BAUD_RATE 24000
-#define STOP_BITS 10
+#define STOP_BITS 1
 #define START_BITS 1
 
 namespace AudioUART {
@@ -104,15 +104,15 @@ namespace AudioUART {
 
             short* outdata_short = (short*) out->data;
             // Start byte
-            short* start_byte = &playerState->bytes_wavetable[playerState->frame_width * 0xBE];
+            short* start_byte = &playerState->bytes_wavetable[playerState->frame_width * (unsigned char)0xBE];
             // Motor value bytes
             unsigned char l_abs_val = abs(playerParams->motorL_val);
             unsigned char r_abs_val = abs(playerParams->motorR_val);
             short* left_byte = &playerState->bytes_wavetable[playerState->frame_width * l_abs_val];
             short* right_byte = &playerState->bytes_wavetable[playerState->frame_width * r_abs_val];
             // Direction byte. bit 0 is left sign, bit 1 is right sign
-            unsigned char dir = ((playerParams->motorL_val >> 7) & 0x01) |
-                                     ((playerParams->motorR_val >> 6) & 0x02);
+            unsigned char dir = ((playerParams->motorL_val >> 31) & 0x01) |
+                                     ((playerParams->motorR_val >> 30) & 0x02);
             short* dir_byte = &playerState->bytes_wavetable[playerState->frame_width * dir];
 
 

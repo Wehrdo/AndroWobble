@@ -35,6 +35,8 @@ double deviceAngle = 0;
 // timestanp of last gyroscope event
 long lastGyroTime = -1;
 
+double set_angle = -0.17;
+
 int c = 0;
 
 /*
@@ -82,13 +84,17 @@ static int sensorCallback(int fd, int events, void* data) {
         }
     }
 
-    double pid_actuate = pidUpdate(deviceAngle, 0);
+    double pid_actuate = pidUpdate(deviceAngle, set_angle);
     pid_actuate = std::max(-255.0, std::min(255.0, pid_actuate));
-    if (c % 100 == 0) {
-        LOGV("smoothed: %.5f, gyro: %.5f, accel: %.5f", deviceAngle, gyro_d_angle, accel_angle);
-        LOGV("actuate: %f", pid_actuate);
+    if (c % 50 == 0) {
+//        LOGV("smoothed: %.5f, gyro: %.5f, accel: %.5f", deviceAngle, gyro_d_angle, accel_angle);
+//        LOGV("actuate: %f", pid_actuate);
     }
-    AudioUART::set_motors(pid_actuate, pid_actuate);
+    if (abs(deviceAngle) < 0.7) {
+        AudioUART::set_motors(pid_actuate, pid_actuate);
+    } else {
+        AudioUART::set_motors(0, 0);
+    }
 
 
     // return 1 to continue receiving callbacks, 0 cancels callback
@@ -125,6 +131,7 @@ static void unregisterSensors() {
 }
 
 
+
 extern "C" {
 
 JNIEXPORT void JNICALL
@@ -158,8 +165,13 @@ Java_com_davidawehr_androwobble_NativeCalls_destroyStream(JNIEnv *env, jclass ty
 JNIEXPORT void JNICALL
 Java_com_davidawehr_androwobble_NativeCalls_setConstants(JNIEnv *env, jclass type, jdouble p,
                                                          jdouble i, jdouble d) {
-
     updateConstants(p, i, d);
+}
+
+
+JNIEXPORT void JNICALL
+Java_com_davidawehr_androwobble_NativeCalls_setAngle(JNIEnv *env, jclass type, jdouble angle) {
+    set_angle = angle;
 }
 
 }

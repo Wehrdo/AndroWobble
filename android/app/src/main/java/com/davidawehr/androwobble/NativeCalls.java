@@ -11,5 +11,7 @@ public class NativeCalls {
 
     public static native void setConstants(double p, double i, double d);
 
+    public static native void setAngle(double angle);
+
     public static native void destroyStream();
 }

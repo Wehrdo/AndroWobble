@@ -11,10 +11,12 @@ static double integral = 0;
 static double derivative = 0;
 
 static double lastAngle = 0;
+static double integralError = 0;
+
 
 double pidUpdate(double currAngle, double desiredAngle) {
 	double error = desiredAngle - currAngle;
-	double integralError = 0;
+//	error = 3*(error * error) + error;
 
 	if(fabs(error) < INTEGRAL_THRESHHOLD) {
 		integralError = integralError + error;
@@ -24,7 +26,10 @@ double pidUpdate(double currAngle, double desiredAngle) {
 
 	proportional = error * p;
 	integral = integralError * i;
-	derivative = (currAngle - lastAngle) * d;
+	double last_error = (currAngle - lastAngle);
+//	last_error = 3*(last_error * last_error) + last_error;
+
+	derivative = last_error * -d;
 
 	lastAngle = currAngle;
 
@@ -35,4 +40,8 @@ void updateConstants(double _p, double _i, double _d) {
 	p = _p;
 	i = _i;
 	d = _d;
+}
+
+void resetI() {
+	integral = 0;
 }

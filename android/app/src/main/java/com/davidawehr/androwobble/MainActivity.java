@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     BalanceService balService;
     boolean bound = false;
     Button toggleBalBtn;
-    EditText p_text, i_text, d_text;
+    EditText p_text, i_text, d_text, angle_text;
 
     // Used to load the 'native-lib' library on application startup.
 //    static {
@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         p_text = (EditText) findViewById(R.id.p_edit);
         i_text = (EditText) findViewById(R.id.i_edit);
         d_text = (EditText) findViewById(R.id.d_edit);
+        angle_text = (EditText) findViewById(R.id.angle_edit);
     }
 
     @Override
@@ -113,5 +114,8 @@ public class MainActivity extends AppCompatActivity {
         double i_val = Double.parseDouble(i_text.getText().toString());
         double d_val = Double.parseDouble(d_text.getText().toString());
         NativeCalls.setConstants(p_val, i_val, d_val);
+
+        double angle = Double.parseDouble(angle_text.getText().toString());
+        NativeCalls.setAngle(angle);
     }
 }
